@@ -1,0 +1,6 @@
+{
+  "name": "RAULIF",
+  "description": "Comunidad europea para conocer y proteger la naturaleza en Chile a través de expediciones de impacto.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
