@@ -1,0 +1,21 @@
+services:
+  raulif-backend:
+    build: .
+    container_name: raulif-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3101:3101"
+    volumes:
+      - raulif-data:/data
+    environment:
+      - RAULIF_DB=/data/raulif.db
+    networks:
+      - default
+      - proxy-network
+
+volumes:
+  raulif-data:
+
+networks:
+  proxy-network:
+    external: true

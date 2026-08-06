@@ -1,0 +1,23 @@
+services:
+  raulif-mvp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mvp
+    container_name: raulif-mvp-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3103:3103"
+    volumes:
+      - raulif-mvp-data:/data
+    environment:
+      - RAULIF_MVP_DB=/data/raulif_mvp.db
+    networks:
+      - default
+      - proxy-network
+
+volumes:
+  raulif-mvp-data:
+
+networks:
+  proxy-network:
+    external: true

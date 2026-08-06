@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RAULIF TRAVEL — Flujo de la Web</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#020617; color:#e2e8f0; font-family:'JetBrains Mono',monospace; padding:40px 20px; }
+  .wrap { max-width:1200px; margin:0 auto; }
+  h1 { font-size:22px; font-weight:700; letter-spacing:1px; color:#fff; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; background:#34d399; margin-right:10px; animation:pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  .sub { color:#64748b; font-size:12px; margin-top:6px; }
+  .card { background:#0f172a; border:1px solid #1e293b; border-radius:14px; padding:26px; margin-top:28px; }
+  .card h2 { font-size:14px; color:#94a3b8; letter-spacing:1px; margin-bottom:18px; }
+  .legend { display:flex; gap:24px; flex-wrap:wrap; font-size:11px; margin-top:16px; }
+  .lg { display:flex; align-items:center; gap:8px; }
+  .sw { width:14px; height:14px; border-radius:4px; }
+  svg { width:100%; height:auto; margin-top:10px; }
+  .node { font-family:'JetBrains Mono',monospace; }
+  .lbl { fill:#94a3b8; font-size:9px; }
+  .trav { fill:rgba(8,51,68,.5); stroke:#22d3ee; }
+  .prov { fill:rgba(6,78,59,.5); stroke:#34d399; }
+  .adm  { fill:rgba(120,53,15,.35); stroke:#fbbf24; }
+  .flow-a { stroke:#22d3ee; }
+  .flow-b { stroke:#a78bfa; }
+  .money { stroke:#fb7185; stroke-dasharray:5,4; }
+  .footer { color:#475569; font-size:10px; margin-top:24px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="dot"></span>RAULIF TRAVEL — FLUJO DE LA WEB</h1>
+  <p class="sub">Marketplace multi-proveedor · Rutas de turismo aventura y consciente · Ganancias por comisión</p>
+
+  <div class="legend">
+    <div class="lg"><div class="sw" style="background:#22d3ee"></div> Viajero (público)</div>
+    <div class="lg"><div class="sw" style="background:#34d399"></div> Proveedor</div>
+    <div class="lg"><div class="sw" style="background:#fbbf24"></div> Admin Raulif</div>
+    <div class="lg"><div class="sw" style="background:#a78bfa"></div> Flujo A: armar ruta propia (núcleo)</div>
+    <div class="lg"><div class="sw" style="background:#fb7185; border:1px dashed #fb7185"></div> Flujo del dinero (comisión)</div>
+  </div>
+
+  <div class="card">
+    <h2>ARQUITECTURA DE PANTALLAS Y NAVEGACIÓN</h2>
+    <svg viewBox="0 0 1160 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/>
+        </marker>
+        <marker id="ac" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#22d3ee"/>
+        </marker>
+        <marker id="ap" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#a78bfa"/>
+        </marker>
+        <marker id="am" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L7,3 L0,6 Z" fill="#fb7185"/>
+        </marker>
+      </defs>
+
+      <!-- grid -->
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+      </pattern>
+      <rect width="1160" height="700" fill="url(#grid)"/>
+
+      <!-- ===== VIAJERO (público) ===== -->
+      <text x="40" y="40" class="lbl">VIAJERO / PÚBLICO</text>
+      <rect x="40" y="55" width="180" height="70" rx="8" class="node trav"/>
+      <text x="130" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Home</text>
+      <text x="130" y="100" text-anchor="middle" class="lbl">/</text>
+
+      <rect x="250" y="55" width="180" height="70" rx="8" class="node trav"/>
+      <text x="340" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Listado de Rutas</text>
+      <text x="340" y="100" text-anchor="middle" class="lbl">/rutas</text>
+
+      <rect x="460" y="55" width="180" height="70" rx="8" class="node trav"/>
+      <text x="550" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Ficha de Ruta</text>
+      <text x="550" y="100" text-anchor="middle" class="lbl">/rutas/:slug</text>
+
+      <rect x="670" y="55" width="200" height="70" rx="8" class="node trav" stroke-width="2.5"/>
+      <text x="770" y="82" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Constructor de Ruta</text>
+      <text x="770" y="97" text-anchor="middle" fill="#a78bfa" font-size="9">PLANIFICADOR · núcleo</text>
+      <text x="770" y="110" text-anchor="middle" class="lbl">/planificador</text>
+
+      <rect x="900" y="55" width="220" height="70" rx="8" class="node trav"/>
+      <text x="1010" y="85" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Resumen + Checkout</text>
+      <text x="1010" y="100" text-anchor="middle" class="lbl">/planificador/resumen</text>
+
+      <rect x="900" y="160" width="220" height="70" rx="8" class="node trav"/>
+      <text x="1010" y="190" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Confirmación</text>
+      <text x="1010" y="205" text-anchor="middle" class="lbl">/reservas/:id</text>
+
+      <!-- flechas viajero -->
+      <line x1="220" y1="90" x2="248" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="430" y1="90" x2="458" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="640" y1="90" x2="668" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <!-- A: armar propia ruta -->
+      <path d="M770 125 C 900 150, 900 145, 1000 127" fill="none" class="flow-b" stroke-width="2" marker-end="url(#ap)"/>
+      <text x="1005" y="140" class="lbl">Flujo A · armar ruta</text>
+      <!-- A: pack curado -->
+      <path d="M640 130 C 780 180, 850 190, 980 163" fill="none" stroke="#22d3ee" stroke-width="2" marker-end="url(#ac)"/>
+      <text x="700" y="185" fill="#22d3ee" font-size="9">Reservar pack</text>
+
+      <!-- ===== PROVEEDOR ===== -->
+      <text x="40" y="270" class="lbl">PROVEEDOR</text>
+      <rect x="40" y="285" width="160" height="60" rx="8" class="node prov"/>
+      <text x="120" y="310" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Login</text>
+      <text x="120" y="325" text-anchor="middle" class="lbl">/proveedor/login</text>
+      <rect x="240" y="285" width="180" height="60" rx="8" class="node prov"/>
+      <text x="330" y="308" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Dashboard</text>
+      <text x="330" y="323" text-anchor="middle" class="lbl">servicios · ventas · comisión</text>
+      <rect x="460" y="285" width="180" height="60" rx="8" class="node prov"/>
+      <text x="550" y="308" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Mis Servicios</text>
+      <text x="550" y="323" text-anchor="middle" class="lbl">/proveedor/servicios</text>
+      <rect x="460" y="360" width="180" height="60" rx="8" class="node prov"/>
+      <text x="550" y="383" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Alta de Servicio</text>
+      <text x="550" y="398" text-anchor="middle" class="lbl">tipo · precio · fechas</text>
+      <line x1="200" y1="315" x2="238" y2="315" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="420" y1="315" x2="458" y2="315" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="550" y1="345" x2="550" y2="358" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+
+      <!-- ===== ADMIN ===== -->
+      <text x="40" y="470" class="lbl">ADMIN RAULIF</text>
+      <rect x="40" y="485" width="150" height="60" rx="8" class="node adm"/>
+      <text x="115" y="508" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Login Admin</text>
+      <text x="115" y="523" text-anchor="middle" class="lbl">/admin/login</text>
+      <rect x="230" y="485" width="170" height="60" rx="8" class="node adm"/>
+      <text x="315" y="508" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Dashboard</text>
+      <text x="315" y="523" text-anchor="middle" class="lbl">bookings · comisiones</text>
+      <rect x="440" y="485" width="180" height="60" rx="8" class="node adm"/>
+      <text x="530" y="508" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Proveedores</text>
+      <text x="530" y="523" text-anchor="middle" class="lbl">% comisión pactada</text>
+      <rect x="440" y="560" width="180" height="60" rx="8" class="node adm"/>
+      <text x="530" y="583" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Revisión Servicios</text>
+      <text x="530" y="598" text-anchor="middle" class="lbl">aprobado / rechazado</text>
+      <rect x="660" y="485" width="190" height="60" rx="8" class="node adm"/>
+      <text x="755" y="508" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Liquidaciones</text>
+      <text x="755" y="523" text-anchor="middle" class="lbl">/admin/liquidaciones · payouts</text>
+      <line x1="190" y1="515" x2="228" y2="515" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="400" y1="515" x2="438" y2="515" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="620" y1="515" x2="658" y2="515" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="530" y1="545" x2="530" y2="558" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ah)"/>
+
+      <!-- flujo proveedor -> admin (servicio en revision) -->
+      <path d="M550 345 C 610 420, 560 470, 520 483" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+      <text x="610" y="430" fill="#fbbf24" font-size="8">servicio → revision</text>
+      <!-- admin aprueba -> visible catálogo -->
+      <path d="M440 515 C 340 500, 320 120, 452 97" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah)"/>
+      <text x="300" y="260" fill="#fbbf24" font-size="8">aprobado → catálogo público</text>
+
+      <!-- ===== FLUJO DEL DINERO (comisión) ===== -->
+      <text x="40" y="660" class="lbl" fill="#fb7185">FLUJO DEL DINERO · COMISIÓN</text>
+      <rect x="40" y="600" width="220" height="44" rx="8" fill="rgba(136,19,55,.35)" stroke="#fb7185" stroke-width="1.5"/>
+      <text x="150" y="616" text-anchor="middle" fill="#fff" font-size="9">Viajero paga TOTAL a Raulif</text>
+      <text x="150" y="630" text-anchor="middle" class="lbl" fill="#fb7185">booking_items por línea</text>
+      <rect x="320" y="600" width="220" height="44" rx="8" fill="rgba(136,19,55,.35)" stroke="#fb7185" stroke-width="1.5"/>
+      <text x="430" y="616" text-anchor="middle" fill="#fff" font-size="9">Comisión Raulif = Σ(precio × %)</text>
+      <text x="430" y="630" text-anchor="middle" class="lbl" fill="#fb7185">calculada y congelada al reservar</text>
+      <rect x="600" y="600" width="220" height="44" rx="8" fill="rgba(136,19,55,.35)" stroke="#fb7185" stroke-width="1.5"/>
+      <text x="710" y="616" text-anchor="middle" fill="#fff" font-size="9">Payout a proveedor</text>
+      <text x="710" y="630" text-anchor="middle" class="lbl" fill="#fb7185">Σ precios − comisión</text>
+      <line x1="260" y1="622" x2="318" y2="622" stroke="#fb7185" stroke-width="2" marker-end="url(#am)"/>
+      <line x1="540" y1="622" x2="598" y2="622" stroke="#fb7185" stroke-width="2" marker-end="url(#am)"/>
+      <line x1="850" y1="622" x2="880" y2="622" stroke="#fb7185" stroke-width="2" marker-end="url(#am)"/>
+    </svg>
+  </div>
+
+  <div class="card">
+    <h2>RESUMEN DE FLUJOS</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:11px;">
+      <div>
+        <b style="color:#22d3ee">FLUJO A · ARMAR RUTA PROPIA (núcleo)</b>
+        <ul style="list-style:none;margin-top:10px;color:#cbd5e1;line-height:1.9;">
+          <li>1. Home → /rutas</li>
+          <li>2. "Armar tu ruta" → /planificador</li>
+          <li>3. Por día: proveedor + servicio (hospedaje/guía/transporte/actividad)</li>
+          <li>4. Ver total + comisión en vivo</li>
+          <li>5. /resumen → checkout → confirmación</li>
+        </ul>
+      </div>
+      <div>
+        <b style="color:#22d3ee">FLUJO B · PACK CURADO</b>
+        <ul style="list-style:none;margin-top:10px;color:#cbd5e1;line-height:1.9;">
+          <li>1. Home → /rutas → ficha</li>
+          <li>2. Ver itinerario + desglose proveedores</li>
+          <li>3. "Reservar" → checkout</li>
+          <li>4. Booking con booking_items por línea</li>
+        </ul>
+      </div>
+      <div>
+        <b style="color:#fbbf24">PROVEEDOR + ADMIN</b>
+        <ul style="list-style:none;margin-top:10px;color:#cbd5e1;line-height:1.9;">
+          <li>Proveedor: alta servicio → estado <i>revision</i></li>
+          <li>Admin: aprueba → visible en catálogo</li>
+          <li>Admin: fija % comisión por proveedor</li>
+          <li>Admin: calcula liquidaciones (payouts)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">RAULIF TRAVEL · Documento de diseño v0.1 · docs/flujo-web.html · Generado 2026-08-06</div>
+</div>
+</body>
+</html>
