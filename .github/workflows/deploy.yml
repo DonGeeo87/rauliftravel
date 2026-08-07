@@ -1,0 +1,47 @@
+name: Deploy Raulif Frontend to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Copy project to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "Dockerfile,nginx.conf,docker-compose.yml,package.json,package-lock.json,index.html,vite.config.ts,tsconfig.json,src,public,assets"
+          target: "/opt/rauliftravel"
+          strip_components: 0
+          overwrite: true
+
+      - name: Build & run on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/rauliftravel
+            docker compose up -d --build
+            docker exec nginx-proxy-manager sh -c 'rm -rf /data/nginx/cache/* 2>/dev/null; nginx -s reload 2>/dev/null' || true
+            echo "✅ Raulif frontend deployed"

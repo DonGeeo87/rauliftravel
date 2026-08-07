@@ -1,0 +1,13 @@
+services:
+  raulif-frontend:
+    build: .
+    container_name: raulif-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3104:80"
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true
