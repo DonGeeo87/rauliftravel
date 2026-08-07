@@ -11,8 +11,7 @@ import {
   ArrowRight, Heartbeat, Wind, Flame,
 } from '@phosphor-icons/react';
 import { usePexels, PexelsPhoto } from '../lib/usePexels';
-
-const DEPORTES_QUERIES = ['kayak chile', 'trekking patagonia', 'rafting river', 'mountaineering andes', 'surf chile', 'mountain bike trail'];
+import ExpedicionModal from './ExpedicionModal';
 
 const NICHOS = [
   { icon: Bird, label: 'Avistamiento de aves', desc: 'Humedales y bosques' },
@@ -43,6 +42,7 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
   subStatus?: any;
 }) {
   const [heroIdx, setHeroIdx] = useState(0);
+  const [expedicionSlug, setExpedicionSlug] = useState<string | null>(null);
   const [routes, setRoutes] = useState<any[]>([]);
   const [departures, setDepartures] = useState<Record<string, any[]>>({});
   const { photos: heroPhotos } = usePexels('adventure chile landscape', 6);
@@ -99,11 +99,11 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
               </span>
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="mt-5 text-4xl font-black leading-[1.03] md:text-6xl lg:text-7xl">
-              Expediciones guiadas por{' '}
-              <span style={{ color: C.emerald }}>ingenieros</span>
+              Bienvenido a tu{' '}
+              <span style={{ color: C.emerald }}>próxima aventura</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="mt-5 max-w-2xl text-base text-[#c4d4cb] md:text-lg">
-              Cupos limitados por fecha. Cada salida destina parte de la utilidad a conservación real. Conoce Chile con quienes lo estudian y lo protegen.
+              Vive Chile con salidas guiadas por fecha, cupos limitados y un impacto real en la conservación. Aventura con propósito, de norte a sur.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }} className="mt-7 flex flex-wrap items-center gap-3">
               <button onClick={() => onNavigate('catalogo')} className="flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
@@ -140,7 +140,7 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
           </div>
           <div className="space-y-4 text-[#a9bbb1]">
             <p>
-              No vendemos planes turísticos genéricos. Diseñamos expediciones en el territorio chileno guiadas por ingenieros en expediciones, que conocen cada ecosistema y cada cultura local.
+              No vendemos planes turísticos genéricos. Diseñamos salidas en el territorio chileno guiadas por especialistas que conocen cada ecosistema y cada cultura local.
             </p>
             <p className="text-sm" style={{ color: C.dim }}>
               Avistamiento de aves en humedales, fauna silvestre, interpretación ambiental, cocina y cosechas auténticas, flora sagrada y medicinal de los pueblos originarios. Aventura con propósito.
@@ -199,8 +199,8 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => onNavigate('catalogo')} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-colors hover:opacity-90" style={{ backgroundColor: C.emerald }}>
-                        Ver expedición <ArrowRight className="h-4 w-4" weight="bold" />
+                      <button onClick={() => setExpedicionSlug(r.slug)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-colors hover:opacity-90" style={{ backgroundColor: C.emerald }}>
+                        Ver itinerario <ArrowRight className="h-4 w-4" weight="bold" />
                       </button>
                     </div>
                   </motion.div>
@@ -221,7 +221,7 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
               { icon: TreeEvergreen, n: '5%', t: 'de utilidad por salida', d: 'reservado a conservación' },
-              { icon: Wind, n: '100%', t: 'guias con título', d: 'ingenieros en expediciones' },
+              { icon: Wind, n: '100%', t: 'guias especializados', d: 'en cada territorio' },
               { icon: Heartbeat, n: 'Cero', t: 'greenwashing', d: 'reportes por cada salida' },
             ].map((s) => (
               <div key={s.t} className="rounded-2xl border p-6" style={{ borderColor: C.border, backgroundColor: C.card }}>
@@ -235,14 +235,44 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
         </div>
       </section>
 
+      <ExpedicionModal slug={expedicionSlug} onClose={() => setExpedicionSlug(null)} />
     </div>
   );
 }
 
-/** Galería de deportes de aventura poblada con fotos reales de Pexels. */
+/** Galería de deportes de aventura poblada con fotos reales de Pexels por deporte. */
 function DeportesGaleria() {
-  const { photos, loading } = usePexels('extreme sports adventure', 8);
-  const labels = ['Kayak', 'Rafting', 'Trekking', 'Escalada', 'Surf', 'MTB', 'Snowboard', 'Buceo'];
+  const deportes = [
+    { nombre: 'Kayak', query: 'kayak paddle' },
+    { nombre: 'Rafting', query: 'white water rafting' },
+    { nombre: 'Trekking', query: 'hiking trail mountain' },
+    { nombre: 'Escalada', query: 'rock climbing' },
+    { nombre: 'Surf', query: 'surfing wave' },
+    { nombre: 'MTB', query: 'mountain biking' },
+    { nombre: 'Snowboard', query: 'snowboarding' },
+    { nombre: 'Buceo', query: 'scuba diving' },
+  ];
+  const [fotos, setFotos] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all(
+      deportes.map((d) =>
+        fetch(`/api/raulif-mvp/images?q=${encodeURIComponent(d.query)}&per_page=1`)
+          .then((r) => r.json())
+          .then((data) => [d.nombre, data.photos?.[0]?.url] as [string, string])
+          .catch(() => [d.nombre, ''] as [string, string])
+      )
+    ).then((entries) => {
+      if (!active) return;
+      const map: Record<string, string> = {};
+      entries.forEach(([nombre, url]) => { map[nombre] = url; });
+      setFotos(map);
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, []);
 
   return (
     <section className="px-6 py-20 md:px-12" style={{ backgroundColor: C.bg2 }}>
@@ -252,23 +282,27 @@ function DeportesGaleria() {
 
         {loading ? (
           <p className="mt-8" style={{ color: C.dim }}>Cargando imágenes...</p>
-        ) : photos.length === 0 ? (
-          <p className="mt-8" style={{ color: C.dim }}>Galería en preparación.</p>
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {photos.slice(0, 8).map((p, i) => (
+            {deportes.map((d, i) => (
               <motion.div
-                key={p.id}
+                key={d.nombre}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5, delay: i * 0.05 }}
                 className="group relative aspect-[4/5] overflow-hidden rounded-2xl"
-                style={{ borderColor: C.border, border: `1px solid ${C.border}` }}
+                style={{ border: `1px solid ${C.border}` }}
               >
-                <img src={p.url} alt={labels[i] || p.alt} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                {fotos[d.nombre] ? (
+                  <img src={fotos[d.nombre]} alt={d.nombre} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center" style={{ backgroundColor: C.card }}>
+                    <Compass className="h-10 w-10" color={C.emerald} />
+                  </div>
+                )}
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <span className="text-sm font-bold" style={{ color: '#fff' }}>{labels[i] || 'Aventura'}</span>
+                  <span className="text-sm font-bold" style={{ color: '#fff' }}>{d.nombre}</span>
                 </div>
               </motion.div>
             ))}

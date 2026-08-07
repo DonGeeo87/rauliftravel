@@ -59,7 +59,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               </div>
             </button>
             <p className="max-w-sm text-sm leading-relaxed">
-              Expediciones de turismo aventura y consciente en Chile, guiadas por ingenieros en expediciones. Cupos limitados por fecha, con parte de la utilidad destinada a conservación.
+              Expediciones de turismo aventura y consciente en Chile, con salidas guiadas por especialistas que conocen cada territorio. Cupos limitados por fecha, con parte de la utilidad destinada a conservación.
             </p>
           </div>
 

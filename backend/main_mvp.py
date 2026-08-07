@@ -142,20 +142,20 @@ def seed() -> None:
         cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
                     ("p1", "Refugio Patagonia Lodge", "76.123.456-7", "reservas@refugiopatagonia.cl", "+56 9 1111 0001", 8.0, "CLP", "activo"))
         cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
-                    ("p2", "Guías Ingenieros en Expediciones", "77.654.321-8", "guias@raulif.cl", "+56 9 2222 0002", 12.0, "CLP", "activo"))
+                    ("p2", "Guías Especialistas del Territorio", "77.654.321-8", "guias@raulif.cl", "+56 9 2222 0002", 12.0, "CLP", "activo"))
         cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
                     ("p3", "Transporte Austral", "78.111.222-3", "ruta@transaustral.cl", "+56 9 3333 0003", 10.0, "CLP", "activo"))
         # Servicios
         cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
                     ("s1", "p1", "hospedaje", "Refugio 4 noches", "Alojamiento en refugio de conservación", "Coyhaique", 120000.0, "CLP", None, "aprobado"))
         cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    ("s2", "p2", "guia", "Guía Ingeniero en Expediciones (5 días)", "Guía certificado con enfoque en conservación", "Patagonia", 350000.0, "CLP", None, "aprobado"))
+                    ("s2", "p2", "guia", "Guía Especialista del Territorio (5 días)", "Guía certificado con enfoque en conservación", "Patagonia", 350000.0, "CLP", None, "aprobado"))
         cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
                     ("s3", "p3", "transporte", "Traslados terrestres", "Traslado aeropuerto - refugio y salidas diarias", "Patagonia", 90000.0, "CLP", None, "aprobado"))
         # Ruta: Expedición Patagonia Silvestre
         cur.execute("INSERT INTO routes VALUES (?,?,?,?,?,?,?,?,?)",
                     ("r1", "patagonia-silvestre", "Expedición Patagonia Silvestre",
-                     "Fiordos y glaciares", "Expedición de conservación en la Patagonia chilena con guías ingenieros en expediciones.",
+                     "Fiordos y glaciares", "Expedición de conservación en la Patagonia chilena, guiada por especialistas que conocen el territorio.",
                      "fauna-silvestre", "trekking",
                      "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?q=80&w=1200&auto=format&fit=crop", "activo"))
         cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri1", "r1", "s1", 1, 1))

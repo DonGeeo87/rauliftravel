@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { CalendarBlank, Users, ArrowRight, Compass, Clock, CurrencyCircleDollar } from '@phosphor-icons/react';
+import ExpedicionModal from './ExpedicionModal';
 
 interface RouteData {
   id: string; slug: string; title: string; subtitle: string;
@@ -18,6 +19,7 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [departures, setDepartures] = useState<Record<string, Departure[]>>({});
   const [loading, setLoading] = useState(true);
+  const [expedicionSlug, setExpedicionSlug] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/raulif-mvp/catalog/routes')
@@ -40,7 +42,7 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
         <div className="mb-12">
           <h1 className="text-3xl font-black md:text-4xl">Expediciones</h1>
           <p className="mt-3 max-w-2xl text-sm md:text-base" style={{ color: C.dim }}>
-            Salidas guiadas por ingenieros en expediciones. Cada una con fechas exactas y cupos limitados que se liberan según las reservas.
+            Salidas con fechas exactas y cupos limitados que se liberan según las reservas.
           </p>
         </div>
 
@@ -95,8 +97,8 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
                         ))}
                       </div>
 
-                      <button onClick={() => onNavigate('catalogo')} className="mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
-                        Reservar cupo <ArrowRight className="h-4 w-4" weight="bold" />
+                      <button onClick={() => setExpedicionSlug(r.slug)} className="mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
+                        Ver itinerario <ArrowRight className="h-4 w-4" weight="bold" />
                       </button>
                     </div>
                   </div>
@@ -106,6 +108,8 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
           </div>
         )}
       </div>
+
+      <ExpedicionModal slug={expedicionSlug} onClose={() => setExpedicionSlug(null)} />
     </div>
   );
 }

@@ -112,7 +112,7 @@ export default function CatalogoMVP() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="mt-4 text-4xl font-black leading-[1.05] md:text-6xl"
             >
-              Expediciones guiadas por <span style={{ color: C.emerald }}>ingenieros</span>
+              Bienvenido a tu <span style={{ color: C.emerald }}>próxima aventura</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 24 }}

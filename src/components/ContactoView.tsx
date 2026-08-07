@@ -61,7 +61,7 @@ export default function ContactoView() {
             <div className="space-y-3">
               <h2 className="text-2xl font-bold">Operamos en Chile</h2>
               <p className="text-sm leading-relaxed" style={{ color: C.dim }}>
-                Expediciones guiadas por ingenieros en expediciones, con base logística en el territorio. Atención 100% remota y coordinación local.
+                Salidas de aventura y conservación en el territorio chileno, con base logística local. Atención 100% remota y coordinación en terreno.
               </p>
             </div>
             <div className="space-y-6 text-sm">

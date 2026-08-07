@@ -33,7 +33,7 @@ export default function ImpactoView({ db }: { db?: any }) {
         <div className="grid gap-6 md:grid-cols-3">
           {[
             { icon: TreeEvergreen, n: '5%', t: 'de utilidad por salida', d: 'reservado a conservación' },
-            { icon: Wind, n: '100%', t: 'guias con título', d: 'ingenieros en expediciones' },
+            { icon: Wind, n: '100%', t: 'guias especializados', d: 'en cada territorio' },
             { icon: SealCheck, n: 'Cero', t: 'greenwashing', d: 'reportes por cada salida' },
           ].map((s) => (
             <motion.div key={s.t} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5 }} className="rounded-2xl border p-6" style={{ borderColor: C.border, backgroundColor: C.card }}>
