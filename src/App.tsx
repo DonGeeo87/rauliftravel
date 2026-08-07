@@ -18,12 +18,14 @@ import InteractiveDocumentary from './components/InteractiveDocumentary';
 import AdminPanel from './components/AdminPanel';
 import SEOManager from './components/SEOManager';
 import CatalogoMVP from './components/CatalogoMVP';
+import ExperienciaDetalle from './components/ExperienciaDetalle';
 import { getCMSState, saveCMSState } from './lib/cmsState';
 import { GlobalCMSState } from './types';
 
 export default function App() {
   const [db, setDb] = useState<GlobalCMSState>(getCMSState());
   const [activePage, setActivePage] = useState<string>('home');
+  const [expSlug, setExpSlug] = useState<string>('');
   const [newsletterStatus, setNewsletterStatus] = useState<{ submitted: boolean; error: string }>({
     submitted: false,
     error: ''
@@ -37,6 +39,10 @@ export default function App() {
         setActivePage('home');
       } else if (hash === '#/catalogo') {
         setActivePage('catalogo');
+      } else if (hash.startsWith('#/experiencia/')) {
+        const slug = hash.replace('#/experiencia/', '').split('/')[0];
+        setActivePage('experiencia');
+        setExpSlug(slug);
       } else if (hash === '#/historia') {
         setActivePage('historia');
       } else if (hash === '#/expediciones') {
@@ -162,6 +168,9 @@ export default function App() {
               />
             )}
             {activePage === 'catalogo' && <CatalogoMVP />}
+            {activePage === 'experiencia' && (
+              <ExperienciaDetalle slug={expSlug} onBack={() => setActivePage('expediciones')} />
+            )}
             {activePage === 'historia' && <HistoriaView db={db} />}
             {activePage === 'expediciones' && (
               <ExpedicionesView db={db} onNavigate={(page) => setActivePage(page)} />

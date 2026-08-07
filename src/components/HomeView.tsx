@@ -11,7 +11,6 @@ import {
   ArrowRight, Heartbeat, Wind, Flame,
 } from '@phosphor-icons/react';
 import { usePexels, PexelsPhoto } from '../lib/usePexels';
-import ExpedicionModal from './ExpedicionModal';
 
 const NICHOS = [
   { icon: Bird, label: 'Avistamiento de aves', desc: 'Humedales y bosques' },
@@ -42,7 +41,6 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
   subStatus?: any;
 }) {
   const [heroIdx, setHeroIdx] = useState(0);
-  const [expedicionSlug, setExpedicionSlug] = useState<string | null>(null);
   const [routes, setRoutes] = useState<any[]>([]);
   const [departures, setDepartures] = useState<Record<string, any[]>>({});
   const { photos: heroPhotos } = usePexels('adventure chile landscape', 6);
@@ -199,8 +197,8 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => setExpedicionSlug(r.slug)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-colors hover:opacity-90" style={{ backgroundColor: C.emerald }}>
-                        Ver itinerario <ArrowRight className="h-4 w-4" weight="bold" />
+                      <button onClick={() => { window.location.hash = `/experiencia/${r.slug}`; }} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-colors hover:opacity-90" style={{ backgroundColor: C.emerald }}>
+                        Ver experiencia <ArrowRight className="h-4 w-4" weight="bold" />
                       </button>
                     </div>
                   </motion.div>
@@ -235,7 +233,6 @@ export default function HomeView({ onNavigate, db, onSubscribe, subStatus }: {
         </div>
       </section>
 
-      <ExpedicionModal slug={expedicionSlug} onClose={() => setExpedicionSlug(null)} />
     </div>
   );
 }

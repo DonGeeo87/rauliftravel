@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { CalendarBlank, Users, ArrowRight, Compass, Clock, CurrencyCircleDollar } from '@phosphor-icons/react';
-import ExpedicionModal from './ExpedicionModal';
+import { CalendarBlank, Users, ArrowRight, Clock, CurrencyCircleDollar } from '@phosphor-icons/react';
 
 interface RouteData {
   id: string; slug: string; title: string; subtitle: string;
@@ -19,7 +18,6 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [departures, setDepartures] = useState<Record<string, Departure[]>>({});
   const [loading, setLoading] = useState(true);
-  const [expedicionSlug, setExpedicionSlug] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/raulif-mvp/catalog/routes')
@@ -97,8 +95,8 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
                         ))}
                       </div>
 
-                      <button onClick={() => setExpedicionSlug(r.slug)} className="mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
-                        Ver itinerario <ArrowRight className="h-4 w-4" weight="bold" />
+                      <button onClick={() => { window.location.hash = `/experiencia/${r.slug}`; }} className="mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
+                        Ver experiencia <ArrowRight className="h-4 w-4" weight="bold" />
                       </button>
                     </div>
                   </div>
@@ -109,7 +107,6 @@ export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: s
         )}
       </div>
 
-      <ExpedicionModal slug={expedicionSlug} onClose={() => setExpedicionSlug(null)} />
     </div>
   );
 }

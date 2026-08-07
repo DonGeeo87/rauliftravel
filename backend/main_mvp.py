@@ -84,6 +84,7 @@ def init_db() -> None:
         CREATE TABLE IF NOT EXISTS routes (
             id TEXT PRIMARY KEY, slug TEXT UNIQUE NOT NULL, title TEXT NOT NULL,
             subtitle TEXT, description TEXT, nicho TEXT, deporte TEXT,
+            duracion TEXT, precio REAL, moneda TEXT NOT NULL DEFAULT 'CLP',
             imagen TEXT, status TEXT NOT NULL DEFAULT 'activo'
         );
         CREATE TABLE IF NOT EXISTS route_items (
@@ -133,39 +134,121 @@ def now_iso() -> str:
     return datetime.utcnow().isoformat()
 
 
-# ===== Seed demo (datos reales de ejemplo) =====
+# ===== Seed demo (4 experiencias, itinerarios completos por día) =====
 def seed() -> None:
     conn = get_db()
     cur = conn.cursor()
     if cur.execute("SELECT COUNT(*) FROM providers").fetchone()[0] == 0:
         # Proveedores reales (Q1: ya hay operadores)
-        cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
-                    ("p1", "Refugio Patagonia Lodge", "76.123.456-7", "reservas@refugiopatagonia.cl", "+56 9 1111 0001", 8.0, "CLP", "activo"))
-        cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
-                    ("p2", "Guías Especialistas del Territorio", "77.654.321-8", "guias@raulif.cl", "+56 9 2222 0002", 12.0, "CLP", "activo"))
-        cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)",
-                    ("p3", "Transporte Austral", "78.111.222-3", "ruta@transaustral.cl", "+56 9 3333 0003", 10.0, "CLP", "activo"))
-        # Servicios
-        cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    ("s1", "p1", "hospedaje", "Refugio 4 noches", "Alojamiento en refugio de conservación", "Coyhaique", 120000.0, "CLP", None, "aprobado"))
-        cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    ("s2", "p2", "guia", "Guía Especialista del Territorio (5 días)", "Guía certificado con enfoque en conservación", "Patagonia", 350000.0, "CLP", None, "aprobado"))
-        cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    ("s3", "p3", "transporte", "Traslados terrestres", "Traslado aeropuerto - refugio y salidas diarias", "Patagonia", 90000.0, "CLP", None, "aprobado"))
-        # Ruta: Expedición Patagonia Silvestre
-        cur.execute("INSERT INTO routes VALUES (?,?,?,?,?,?,?,?,?)",
-                    ("r1", "patagonia-silvestre", "Expedición Patagonia Silvestre",
-                     "Fiordos y glaciares", "Expedición de conservación en la Patagonia chilena, guiada por especialistas que conocen el territorio.",
-                     "fauna-silvestre", "trekking",
-                     "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?q=80&w=1200&auto=format&fit=crop", "activo"))
+        providers = [
+            ("p1", "Refugio Patagonia Lodge", "76.123.456-7", "reservas@refugiopatagonia.cl", "+56 9 1111 0001", 8.0, "CLP", "activo"),
+            ("p2", "Guías del Territorio Austral", "77.654.321-8", "guias@raulif.cl", "+56 9 2222 0002", 12.0, "CLP", "activo"),
+            ("p3", "Transporte Austral", "78.111.222-3", "ruta@transaustral.cl", "+56 9 3333 0003", 10.0, "CLP", "activo"),
+            ("p4", "Cabañas Elqui", "79.222.333-4", "elqui@raulif.cl", "+56 9 4444 0004", 9.0, "CLP", "activo"),
+            ("p5", "Guías Astronómicas Elqui", "79.333.444-5", "astro@raulif.cl", "+56 9 5555 0005", 12.0, "CLP", "activo"),
+            ("p6", "Aventura Andina", "80.444.555-6", "andina@raulif.cl", "+56 9 6666 0006", 11.0, "CLP", "activo"),
+            ("p7", "Base Lodge Villarrica", "80.555.666-7", "villarrica@raulif.cl", "+56 9 7777 0007", 8.0, "CLP", "activo"),
+            ("p8", "Expediciones Atacama", "81.666.777-8", "atacama@raulif.cl", "+56 9 8888 0008", 12.0, "CLP", "activo"),
+        ]
+        for p in providers:
+            cur.execute("INSERT INTO providers VALUES (?,?,?,?,?,?,?,?)", p)
+
+        # Servicios (cada servicio = un item de un día)
+        services = [
+            ("s1", "p1", "hospedaje", "Refugio Patagonia 4 noches", "Alojamiento en refugio de conservación", "Coyhaique", 120000.0, "CLP", None, "aprobado"),
+            ("s2", "p2", "guia", "Guía del Territorio Austral (5 días)", "Guía certificado en ecología patagónica", "Patagonia", 350000.0, "CLP", None, "aprobado"),
+            ("s3", "p3", "transporte", "Traslado aeropuerto - refugio", "Traslado terrestre privado", "Patagonia", 90000.0, "CLP", None, "aprobado"),
+            ("s4", "p2", "actividad", "Trekking glaciar Día 2", "Caminata guiada al mirador del glaciar", "Patagonia", 0.0, "CLP", None, "aprobado"),
+            ("s5", "p2", "actividad", "Avistamiento fauna Día 3", "Fauna silvestre en humedales", "Patagonia", 45000.0, "CLP", None, "aprobado"),
+            ("s6", "p2", "actividad", "Interpretación ambiental Día 4", "Flora y ecosistemas del bosque nativo", "Patagonia", 35000.0, "CLP", None, "aprobado"),
+            ("s7", "p3", "transporte", "Traslado de regreso Día 5", "Refugio - aeropuerto", "Patagonia", 90000.0, "CLP", None, "aprobado"),
+            # Experiencia 2: Valle del Elqui (3 días)
+            ("s8", "p4", "hospedaje", "Cabañas Valle del Elqui 2 noches", "Cabaña con vista al valle", "Paihuano", 80000.0, "CLP", None, "aprobado"),
+            ("s9", "p5", "guia", "Guía Astronómico (3 días)", "Astroturismo certificado", "Valle del Elqui", 180000.0, "CLP", None, "aprobado"),
+            ("s10", "p5", "actividad", "Observación de estrellas Día 1", "Telescopio profesional bajo cielo oscuro", "Valle del Elqui", 40000.0, "CLP", None, "aprobado"),
+            ("s11", "p4", "actividad", "Ruta del pisco Día 2", "Visita a destilerías y viñedos", "Valle del Elqui", 55000.0, "CLP", None, "aprobado"),
+            ("s12", "p4", "actividad", "Cocina chilena Día 3", "Taller de empanadas y cocina local", "Valle del Elqui", 50000.0, "CLP", None, "aprobado"),
+            ("s13", "p3", "transporte", "Traslado La Serena - Paihuano", "Traslado privado", "Elqui", 70000.0, "CLP", None, "aprobado"),
+            # Experiencia 3: Lagos y Volcanes (4 días)
+            ("s14", "p7", "hospedaje", "Base Lodge Villarrica 3 noches", "Lodge frente al lago", "Pucón", 95000.0, "CLP", None, "aprobado"),
+            ("s15", "p6", "guia", "Guía de Aventura Andina (4 días)", "Guía certificado en deportes de aventura", "Pucón", 300000.0, "CLP", None, "aprobado"),
+            ("s16", "p6", "actividad", "Kayak lago Villarrica Día 1", "Remada guiada por el lago", "Pucón", 60000.0, "CLP", None, "aprobado"),
+            ("s17", "p6", "actividad", "Trekking volcán Día 2", "Ascenso guiado al mirador", "Pucón", 75000.0, "CLP", None, "aprobado"),
+            ("s18", "p6", "actividad", "Termas naturales Día 3", "Baños termales y relajo", "Pucón", 45000.0, "CLP", None, "aprobado"),
+            ("s19", "p3", "transporte", "Traslados Pucón (4 días)", "Transporte local a cada actividad", "Pucón", 80000.0, "CLP", None, "aprobado"),
+            # Experiencia 4: Desierto de Atacama (2 días)
+            ("s20", "p8", "hospedaje", "Campamento Atacama 1 noche", "Campamento en el desierto", "San Pedro", 70000.0, "CLP", None, "aprobado"),
+            ("s21", "p8", "guia", "Guía del Desierto (2 días)", "Guía local de San Pedro", "San Pedro", 120000.0, "CLP", None, "aprobado"),
+            ("s22", "p8", "actividad", "Sandboard dunas Día 1", "Sandboard en dunas del desierto", "San Pedro", 55000.0, "CLP", None, "aprobado"),
+            ("s23", "p8", "actividad", "Valle de la Luna Día 2", "Atardecer y geología del valle", "San Pedro", 60000.0, "CLP", None, "aprobado"),
+        ]
+        for s in services:
+            cur.execute("INSERT INTO services VALUES (?,?,?,?,?,?,?,?,?,?)", s)
+
+        # Rutas (con duración, precio y moneda)
+        routes = [
+            ("r1", "patagonia-silvestre", "Expedición Patagonia Silvestre", "Fiordos y glaciares",
+             "Expedición de conservación en la Patagonia chilena, guiada por especialistas que conocen el territorio.",
+             "fauna-silvestre", "trekking", "5 días", 800000.0, "CLP",
+             "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?q=80&w=1200&auto=format&fit=crop", "activo"),
+            ("r2", "elqui-estrellas", "Valle del Elqui bajo las Estrellas", "Astroturismo y pisco",
+             "Tres días de cielo oscuro, astroturismo y sabores locales en el corazón del Valle del Elqui.",
+             "cultura-local", "astroturismo", "3 días", 495000.0, "CLP",
+             "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop", "activo"),
+            ("r3", "lagos-y-volcanes", "Lagos y Volcanes de la Araucanía", "Aventura lacustre",
+             "Kayak, trekking y termas alrededor del volcán Villarrica. Aventura guiada de 4 días.",
+             "aventura", "kayak", "4 días", 655000.0, "CLP",
+             "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=1200&auto=format&fit=crop", "activo"),
+            ("r4", "desierto-atacama", "Desierto de Atacama en 2 Días", "Dunas y valle lunar",
+             "Sandboard, Valle de la Luna y geología del desierto más árido del mundo.",
+             "aventura", "sandboard", "2 días", 305000.0, "CLP",
+             "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1200&auto=format&fit=crop", "activo"),
+        ]
+        for r in routes:
+            cur.execute("INSERT INTO routes VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", r)
+
+        # route_items: (id, route_id, service_id, day, sort_order)
+        # Patagonia (5 días)
         cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri1", "r1", "s1", 1, 1))
         cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri2", "r1", "s2", 1, 2))
         cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri3", "r1", "s3", 1, 3))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri4", "r1", "s4", 2, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri5", "r1", "s5", 3, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri6", "r1", "s6", 4, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri7", "r1", "s7", 5, 1))
+        # Elqui (3 días)
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri8", "r2", "s8", 1, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri9", "r2", "s9", 1, 2))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri10", "r2", "s10", 1, 3))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri11", "r2", "s11", 2, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri12", "r2", "s12", 3, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri13", "r2", "s13", 1, 4))
+        # Lagos y Volcanes (4 días)
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri14", "r3", "s14", 1, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri15", "r3", "s15", 1, 2))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri16", "r3", "s16", 1, 3))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri17", "r3", "s17", 2, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri18", "r3", "s18", 3, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri19", "r3", "s19", 1, 4))
+        # Atacama (2 días)
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri20", "r4", "s20", 1, 1))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri21", "r4", "s21", 1, 2))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri22", "r4", "s22", 1, 3))
+        cur.execute("INSERT INTO route_items VALUES (?,?,?,?,?)", ("ri23", "r4", "s23", 2, 1))
+
         # Departures con cupos por fecha exacta (requisito Matías)
-        cur.execute("INSERT INTO departures VALUES (?,?,?,?,?,?)",
-                    ("d1", "r1", "2026-12-10", "2026-12-21", 20, "abierta"))
-        cur.execute("INSERT INTO departures VALUES (?,?,?,?,?,?)",
-                    ("d2", "r1", "2027-01-15", "2027-01-26", 15, "abierta"))
+        departures = [
+            ("d1", "r1", "2026-12-10", "2026-12-21", 20, "abierta"),
+            ("d2", "r1", "2027-01-15", "2027-01-26", 15, "abierta"),
+            ("d3", "r2", "2026-11-05", "2026-11-08", 12, "abierta"),
+            ("d4", "r2", "2027-02-12", "2027-02-15", 10, "abierta"),
+            ("d5", "r3", "2027-01-08", "2027-01-12", 16, "abierta"),
+            ("d6", "r3", "2027-03-05", "2027-03-09", 12, "abierta"),
+            ("d7", "r4", "2026-10-15", "2026-10-17", 14, "abierta"),
+            ("d8", "r4", "2027-04-10", "2027-04-12", 10, "abierta"),
+        ]
+        for d in departures:
+            cur.execute("INSERT INTO departures VALUES (?,?,?,?,?,?)", d)
     conn.commit()
     conn.close()
 
@@ -179,7 +262,7 @@ seed()
 def list_routes() -> List[Dict[str, Any]]:
     conn = get_db()
     rows = [dict(r) for r in conn.execute(
-        "SELECT id, slug, title, subtitle, description, nicho, deporte, imagen FROM routes WHERE status='activo'"
+        "SELECT id, slug, title, subtitle, description, nicho, deporte, duracion, precio, moneda, imagen FROM routes WHERE status='activo'"
     ).fetchall()]
     conn.close()
     return rows
