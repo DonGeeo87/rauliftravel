@@ -1,8 +1,8 @@
 # RAULIF TRAVEL — Brief de Requisitos
 
-> **Estado:** Borrador v0.1 — Documento vivo. Se actualiza a medida que el primo y DonGeeo87 responden las preguntas abiertas.
-> **Fecha:** 2026-08-06
-> **Stack objetivo:** React 19 + Vite + Tailwind · FastAPI · Supabase (Postgres) · Docker en VPS
+> **Estado:** v0.2 — Q1–Q4 respondidas (7-Ago-2026). MVP en producción.
+> **Fecha:** 2026-08-06 (actualizado 2026-08-07)
+> **Stack objetivo:** React 19 + Vite + Tailwind · FastAPI + SQLite · Docker en VPS
 
 ---
 
@@ -40,8 +40,10 @@ Un **planificador de viajes de turismo aventura y turismo consciente** que permi
 ## 4. Funcionalidades (por prioridad)
 
 ### MVP — Sprint 1
-- [ ] Listado de rutas/packs armables.
-- [ ] Ficha de ruta con desglose transparente por proveedor.
+- [x] Listado de rutas/packs armables (4 experiencias en producción).
+- [x] Ficha de ruta con desglose transparente por proveedor (página de detalle).
+- [x] Itinerario completo por día con cupos por fecha exacta.
+- [x] Galería de deportes con fotos reales (Pexels).
 - [ ] Constructor de ruta (día a día, elegir proveedor+servicio por tramo).
 - [ ] Cálculo en vivo de precio total + comisión Raulif.
 - [ ] Booking con checkout (pasarela) → registra `booking_items` por proveedor.
@@ -90,25 +92,25 @@ La repo `rauliftravel1-0-` actual **compila limpio** (TS ✓ build ✓) y tiene 
 
 ---
 
-## 7. ⚠️ Preguntas abiertas (necesarias antes de diseñar el 80%)
+## 7. ✅ Decisiones clave (Q1–Q4, respondidas por Matías el 6-Ago-2026)
 
-Estas 4 decisiones definen el diseño. **No las podemos inventar.**
+Estas 4 decisiones definen el diseño y ya están tomadas.
 
 ### Q1 — Proveedores de lanzamiento
-¿Ya hay operadores comprometidos (hospedajes, guías, transporte) o construimos el marketplace "en frío" y reclutamos después?
-→ Define si el MVP prioriza el **portal proveedor** o solo la **vitrina + constructor**.
+**Decisión:** Ya hay operadores comprometidos (hospedaje, guías, transporte).
+→ El MVP prioriza el **portal proveedor + vitrina** con datos reales, no demo en frío.
 
 ### Q2 — Moneda
-¿Precios en **CLP** o en **€/USD**? La repo actual apunta a europeos (€). Tu ecosistema es Chile.
-→ Cambia diseño de pagos, formato de precios y público objetivo.
+**Decisión:** Multi-moneda (CLP + EUR + USD).
+→ El sistema maneja precios en moneda origen + campo moneda, con conversión.
 
 ### Q3 — Flujo de cobro
-¿**Raulif cobra el total** y liquida a proveedores (modelo OTA estándar, más control) o **cada proveedor cobra aparte** y Raulif solo factura su comisión?
-→ Recomendado: Raulif cobra el total. Define la pasarela y el esquema de payouts.
+**Decisión:** Raulif cobra el total y liquida a proveedores (modelo OTA).
+→ Raulif es la pasarela: necesita payment gateway + payouts por proveedor.
 
 ### Q4 — Turismo consciente
-¿El MVP incluye el componente de **impacto/conservación** (reforestación por viaje, como la repo actual) o es puramente ruteo + comisión en la primera versión?
-→ Define alcance de la Fase 1 vs. Fase 2.
+**Decisión:** Impacto desde el inicio, gestionado con **parte de la utilidad** (no operación propia).
+→ Diferenciador: % de la utilidad de cada booking se destina a conservación. Es un cálculo automático + reporte, no logística de campo.
 
 ---
 

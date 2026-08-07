@@ -1,7 +1,7 @@
 # RAULIF TRAVEL — Roadmap
 
-> **Estado:** v0.1 — Se ajusta según las respuestas al brief (Q1–Q4).
-> **Filosofía:** MVP funcional en el primer sprint → validar con proveedores reales → iterar. Nada nuevo hasta que el flujo de comisión funcione de punta a punta.
+> **Estado:** v0.3 — MVP en producción (7-Ago-2026).
+> **Filosofía:** MVP funcional → validar con proveedores reales → iterar. Nada nuevo hasta que el flujo de comisión funcione de punta a punta.
 
 ---
 
@@ -11,52 +11,44 @@ Del brief de Raulif: construir un **ecosistema** (YouTube, redes, web, turismo, 
 
 ---
 
-## Fase 0 — Definición (esta semana)
+## Fase 0 — Definición ✅ COMPLETADA
 
-**Objetivo:** dejar la arquitectura y el alcance claros antes de escribir código.
-
-- [x] Clonar y auditar la repo actual (compila limpio, es vitrina de expediciones propias).
+- [x] Clonar y auditar la repo actual.
 - [x] Redactar brief de requisitos (`01-brief-requisitos.md`).
 - [x] Roadmap (`02-roadmap.md`) y flujo web (`03-flujo-web.md`) + diagrama.
-- [ ] **Responder Q1–Q4 del brief** (proveedores, moneda, cobro, impacto).
-- [ ] Definir esquema Supabase (tablas + relaciones).
-- [ ] Definir contrato de API FastAPI.
-
-**Entregable:** documento de arquitectura aprobado + repo de referencia documentado.
+- [x] **Responder Q1–Q4 del brief** (proveedores, moneda, cobro, impacto).
+- [x] Definir esquema de datos (SQLite en backend MVP).
+- [x] Definir contrato de API FastAPI.
 
 ---
 
-## Fase 1 — MVP (Sprint 1, ~1–2 semanas)
+## Fase 1 — MVP ✅ EN PRODUCCIÓN
 
 **Objetivo:** el flujo de comisión funcionando de punta a punta con datos de ejemplo.
 
-### Alcance
-- **Público (vitrina):** listado de rutas/packs + ficha con desglose por proveedor.
-- **Planificador:** constructor de ruta día a día (proveedor + servicio por tramo), precio + comisión en vivo.
-- **Booking + checkout:** reserva registrada con `booking_items` por proveedor.
-- **Portal proveedor (básico):** alta de servicios, ver sus ventas y comisión acumulada.
-- **Panel admin (mínimo):** aprobar servicios, configurar % comisión por proveedor.
+### Logrado
+- **Público (vitrina):** listado de 4 experiencias con itinerario completo por día y cupos por fecha.
+- **Página de detalle** por experiencia (ficha completa).
+- **Galería de deportes** con fotos reales de Pexels.
+- **UI/UX dark premium** coherente.
+- **Backend MVP** (FastAPI + SQLite): catálogo, cupos, reservas, impacto Q4.
+- **Deploy** GitHub Actions → VPS, dominio `rauliftravel.codigoguerrero.dev`.
 
-### Stack
-- Frontend: React 19 + Vite + Tailwind (reutilizando diseño/componentes de la repo actual).
-- Backend: FastAPI (multi-tenant) en Docker.
-- DB: Supabase Postgres.
-- Deploy: VPS (62.146.227.146) vía Docker + Coolify o docker-compose.
-
-### Criterios de salida
-- [ ] Viajero arma ruta multi-proveedor en < 3 min.
-- [ ] Booking persiste con desglose por proveedor (auditable).
-- [ ] Admin puede ver comisión acumulada por proveedor.
+### Pendiente (Fase 1)
+- [ ] **Flujo de reserva real:** botón "Reservar" crea booking y resta cupo (API ya lista).
+- [ ] **Checkout / pago** (multi-moneda, modelo OTA).
+- [ ] **Portal proveedor** (alta de servicios, ver ventas y comisión).
+- [ ] **Panel admin** (aprobar servicios, configurar % comisión).
 
 ---
 
 ## Fase 2 — Producto (Sprint 2–3)
 
-- [ ] Autenticación por roles (viajero / proveedor / admin) — Supabase Auth.
+- [ ] Autenticación por roles (viajero / proveedor / admin).
 - [ ] Panel admin completo: gestión de proveedores, liquidaciones/payouts.
 - [ ] Email transaccional (confirmación, factura) — Resend/Listmonk.
 - [ ] Búsqueda y filtros (ubicación, tipo, nivel físico, fechas).
-- [ ] Módulo "turismo consciente / impacto" (reforestación, donaciones por viaje) — si aplica según Q4.
+- [ ] Módulo "turismo consciente / impacto" (reporte por salida).
 
 ---
 
@@ -66,7 +58,7 @@ Del brief de Raulif: construir un **ecosistema** (YouTube, redes, web, turismo, 
 - [ ] Mapas con rutas (Leaflet/MapLibre).
 - [ ] Multi-moneda y multi-idioma (si el público es europeo).
 - [ ] Payouts automáticos a proveedores.
-- [ ] Integración con Listmonk para campañas de retención (email marketing).
+- [ ] Integración con Listmonk para campañas de retención.
 
 ---
 
@@ -83,7 +75,7 @@ Del brief de Raulif: construir un **ecosistema** (YouTube, redes, web, turismo, 
 
 | Riesgo | Mitigación |
 |---|---|
-| No hay proveedores al lanzar | Arrancar con datos de ejemplo (demo) y reclutar operadores reales con el demo en mano (Q1). |
-| Pago/comisión complejo | Modelo simple primero: Raulif cobra total, liquida por línea. Iterar después (Q3). |
-| Moneda/público ambiguo | Resolver Q2 antes de diseñar pagos. |
+| No hay proveedores al lanzar | Ya hay operadores comprometidos (Q1). |
+| Pago/comisión complejo | Modelo simple primero: Raulif cobra total, liquida por línea (Q3). |
+| Moneda/público ambiguo | Multi-moneda (Q2). |
 | CMS en localStorage no escala | No reutilizarlo como persistencia; solo como referencia de diseño. |
