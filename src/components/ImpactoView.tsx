@@ -1,129 +1,76 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import { motion } from 'motion/react';
+import { TreeEvergreen, Heartbeat, Wind, HandHeart, SealCheck, ChartLine, Recycle } from '@phosphor-icons/react';
 
-import { HeartHandshake, Check, ShieldCheck, MapPin } from 'lucide-react';
-import { GlobalCMSState } from '../types';
+const C = {
+  bg: '#0a0f0d', bg2: '#101713', card: '#141c18',
+  ink: '#eef5f1', dim: '#8ba093', emerald: '#38c98b', amber: '#e8a54a',
+  border: 'rgba(255,255,255,0.07)',
+};
 
-interface ImpactoViewProps {
-  db: GlobalCMSState;
-}
+const IMPACTOS = [
+  { icon: TreeEvergreen, titulo: 'Conservación', texto: 'Parte de la utilidad de cada salida se reserva para proyectos de conservación con reporte transparente.' },
+  { icon: Recycle, titulo: 'Cero greenwashing', texto: 'Publicamos qué se destinó y a dónde, salida por salida. La transparencia es el estándar.' },
+  { icon: HandHeart, titulo: 'Cultura local', texto: 'Experiencias con pueblos originarios, cocina, cosechas y flora sagrada que respetan y visibilizan su sabiduría.' },
+  { icon: ChartLine, titulo: 'Medición real', texto: 'El impacto no se promete, se mide y se reporta con la utilidad concreta de cada expedición.' },
+];
 
-export default function ImpactoView({ db }: ImpactoViewProps) {
+export default function ImpactoView({ db }: { db?: any }) {
   return (
-    <div id="impacto-view" className="bg-brand-bg min-h-screen pt-16">
-      
-      {/* Header */}
-      <section className="py-20 bg-brand-dark text-white text-center border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-brand-green uppercase bg-white/10 px-3 py-1.5 rounded-full">Transparencia • Motor de Impacto</span>
-          <h1 className="text-3xl sm:text-4xl font-serif font-normal tracking-tight">Resultados e Impacto Real</h1>
-          <p className="text-brand-bg/80 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-sans font-light">
-            Creemos en la contabilidad honesta del territorio. Todo el capital procedente de membresías y donaciones financia de manera exclusiva los hitos que verás a continuación.
+    <div style={{ backgroundColor: C.bg, color: C.ink, fontFamily: "'Inter', system-ui, sans-serif", minHeight: '100vh', paddingTop: '96px' }}>
+      <div className="mx-auto max-w-6xl px-6 pb-20 md:px-12">
+        {/* Header */}
+        <div className="mb-12 max-w-3xl">
+          <span className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold" style={{ borderColor: C.border, color: C.emerald }}>
+            <Heartbeat className="h-3.5 w-3.5" weight="fill" /> Impacto con propósito
+          </span>
+          <h1 className="mt-5 text-3xl font-black md:text-4xl">Parte de la utilidad, destinada a conservación</h1>
+          <p className="mt-4 text-sm leading-relaxed md:text-base" style={{ color: C.dim }}>
+            No operamos reforestación propia ni plantamos banderas de marketing. Reservamos un porcentaje de la utilidad de cada salida y lo destinamos a proyectos reales de conservación y cultura local, con total transparencia.
           </p>
         </div>
-      </section>
 
-      {/* Main Stats Block */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div className="bg-white border border-brand-dark/5 p-8 rounded-3xl text-center shadow-sm">
-            <span className="block text-5xl font-serif font-normal text-brand-green">{db.impacto.reforestedCount}+</span>
-            <span className="block text-sm font-semibold text-brand-dark mt-3 uppercase tracking-wide font-sans">Árboles Nativos Sembrados</span>
-            <p className="text-xs text-brand-dark/65 mt-2 font-sans leading-relaxed font-light">
-              Plántulas endémicas cultivadas en cooperativas comunitarias y sembradas en áreas devastadas.
-            </p>
-          </div>
-          <div className="bg-white border border-brand-dark/5 p-8 rounded-3xl text-center shadow-sm">
-            <span className="block text-5xl font-serif font-normal text-brand-green">{db.impacto.schoolsSupported}</span>
-            <span className="block text-sm font-semibold text-brand-dark mt-3 uppercase tracking-wide font-sans">Escuelas Rurales Apoyadas</span>
-            <p className="text-xs text-brand-dark/65 mt-2 font-sans leading-relaxed font-light">
-              Becas completas de educación ambiental y salidas científicas para niños locales.
-            </p>
-          </div>
-          <div className="bg-white border border-brand-dark/5 p-8 rounded-3xl text-center shadow-sm">
-            <span className="block text-5xl font-serif font-normal text-brand-green">{db.impacto.conservedHectares} ha</span>
-            <span className="block text-sm font-semibold text-brand-dark mt-3 uppercase tracking-wide font-sans">Área en Monitoreo de Fauna</span>
-            <p className="text-xs text-brand-dark/65 mt-2 font-sans leading-relaxed font-light">
-              Mapeo de corredores biológicos mediante red infrarroja activa para proteger al pudú.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Narrative Section with specific projects */}
-      <section className="pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        
-        <div>
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-green block mb-1">Métricas Detalladas</span>
-          <h2 className="text-2xl font-serif text-brand-dark">Nuestros Proyectos de Campo Activos</h2>
-        </div>
-
-        <div className="space-y-16">
-          {db.impacto.projects.map((proj, idx) => (
-            <div
-              key={proj.id}
-              className={`grid grid-cols-1 lg:grid-cols-12 gap-12 items-center border-t border-brand-dark/5 pt-16 ${
-                idx === 0 ? 'border-t-0 pt-0' : ''
-              }`}
-            >
-              {/* Project Visual Card */}
-              <div className={`lg:col-span-5 relative overflow-hidden rounded-3xl ${idx % 2 === 1 ? 'lg:order-last' : ''}`}>
-                <img
-                  src={proj.image}
-                  alt={proj.title}
-                  className="w-full aspect-[4/3] object-cover rounded-3xl shadow-sm border border-brand-dark/5"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute top-4 left-4 bg-brand-dark/90 backdrop-blur-sm text-white font-mono text-xs font-semibold px-3.5 py-1.5 rounded-full flex items-center space-x-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-brand-green" />
-                  <span>{proj.location}</span>
-                </div>
-              </div>
-
-              {/* Project Explanation Card */}
-              <div className="lg:col-span-7 space-y-4">
-                <span className="text-[10px] font-mono text-brand-green font-bold uppercase bg-brand-green/10 px-2.5 py-1 rounded-md border border-brand-green/15">
-                  {proj.category}
-                </span>
-                <h3 className="text-2xl font-serif text-brand-dark">
-                  {proj.title}
-                </h3>
-                <p className="text-brand-dark/85 font-serif italic text-base leading-relaxed">
-                  "{proj.description}"
-                </p>
-                <p className="text-brand-dark/75 text-xs sm:text-sm leading-relaxed font-sans font-light">
-                  {proj.details}
-                </p>
-
-                <div className="p-4 bg-brand-bg rounded-2xl flex items-center space-x-4 border border-brand-dark/5 max-w-md">
-                  <div className="w-10 h-10 rounded-full bg-brand-green text-white flex items-center justify-center font-bold text-lg">
-                    {proj.metricValue.includes('+') ? '+' : ''}
-                  </div>
-                  <div>
-                    <span className="block text-xs font-mono font-bold text-brand-dark uppercase">Hito alcanzado</span>
-                    <span className="block text-sm font-semibold text-brand-dark/70">{proj.metricValue} {proj.metricLabel}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Cifras */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { icon: TreeEvergreen, n: '5%', t: 'de utilidad por salida', d: 'reservado a conservación' },
+            { icon: Wind, n: '100%', t: 'guias con título', d: 'ingenieros en expediciones' },
+            { icon: SealCheck, n: 'Cero', t: 'greenwashing', d: 'reportes por cada salida' },
+          ].map((s) => (
+            <motion.div key={s.t} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5 }} className="rounded-2xl border p-6" style={{ borderColor: C.border, backgroundColor: C.card }}>
+              <s.icon className="mb-4 h-8 w-8" weight="duotone" color={C.emerald} />
+              <p className="text-4xl font-black" style={{ color: C.emerald }}>{s.n}</p>
+              <p className="mt-2 font-semibold">{s.t}</p>
+              <p className="text-sm" style={{ color: C.dim }}>{s.d}</p>
+            </motion.div>
           ))}
         </div>
 
-        {/* Legal & audit note */}
-        <div className="bg-white border border-brand-dark/5 rounded-2xl p-6 flex items-start space-x-4 text-xs max-w-3xl mx-auto">
-          <ShieldCheck className="w-6 h-6 text-brand-green shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h4 className="font-serif text-lg text-brand-dark">Compromiso de Auditoría Ambiental Abierta</h4>
-            <p className="text-brand-dark/75 leading-relaxed font-sans font-light">
-              La transparencia es nuestro motor de confianza. Los fondos recaudados a través de las expediciones, patrocinios y membresías se asocian de forma biunívoca con coordenadas geográficas georreferenciadas de plantación de árboles nativos y auditorías contables públicas. Puedes consultar todos los movimientos contables contactando a nuestro equipo.
-            </p>
-          </div>
+        {/* Principios */}
+        <div className="mt-16 grid gap-6 md:grid-cols-2">
+          {IMPACTOS.map((imp, i) => (
+            <motion.div key={imp.titulo} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5, delay: i * 0.06 }} className="flex gap-4 rounded-2xl border p-6" style={{ borderColor: C.border, backgroundColor: C.bg2 }}>
+              <imp.icon className="h-8 w-8 shrink-0" weight="duotone" color={C.emerald} />
+              <div>
+                <h3 className="font-bold">{imp.titulo}</h3>
+                <p className="mt-1 text-sm leading-relaxed" style={{ color: C.dim }}>{imp.texto}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-      </section>
-
+        {/* Callout */}
+        <div className="mt-12 rounded-2xl border p-6 md:p-8" style={{ borderColor: 'rgba(56,201,139,0.3)', backgroundColor: 'rgba(56,201,139,0.06)' }}>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+            <Wind className="h-10 w-10 shrink-0" weight="duotone" color={C.emerald} />
+            <div>
+              <h3 className="text-lg font-bold">Viajar es proteger lo que conoces</h3>
+              <p className="mt-1 text-sm" style={{ color: C.dim }}>
+                Cada expedición es una forma directa de financiar la conservación del territorio chileno y de visibilizar a sus comunidades.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

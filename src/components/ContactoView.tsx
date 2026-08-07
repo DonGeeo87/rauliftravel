@@ -1,19 +1,15 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState, ChangeEvent, FormEvent } from 'react';
-import { Send, CheckCircle, Mail, MapPin, ShieldCheck } from 'lucide-react';
+import { PaperPlaneTilt, CheckCircle, Envelope, MapPin, ShieldCheck, Compass } from '@phosphor-icons/react';
 import { getCMSState, saveCMSState } from '../lib/cmsState';
 
+const C = {
+  bg: '#0a0f0d', bg2: '#101713', card: '#141c18',
+  ink: '#eef5f1', dim: '#8ba093', emerald: '#38c98b',
+  border: 'rgba(255,255,255,0.07)',
+};
+
 export default function ContactoView() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,193 +21,117 @@ export default function ContactoView() {
   const handleContactSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      setError('Por favor, rellena todos los campos obligatorios (*).');
-      return;
-    }
-
-    if (!formData.email.includes('@')) {
-      setError('Por favor, introduce una dirección de correo electrónico válida.');
-      return;
-    }
-
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) { setError('Por favor, rellena todos los campos obligatorios (*).'); return; }
+    if (!formData.email.includes('@')) { setError('Por favor, introduce un correo electrónico válido.'); return; }
     const state = getCMSState();
-
-    // Add submission
-    const newSubmission = {
-      id: `con-${Date.now()}`,
-      name: formData.name.trim(),
-      email: formData.email.trim().toLowerCase(),
-      subject: formData.subject.trim(),
-      message: formData.message.trim(),
-      createdAt: new Date().toISOString()
-    };
-
-    state.contactoSubmissions.push(newSubmission);
-    saveCMSState(state);
-
-    setSubmitted(true);
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
+    state.contactoSubmissions.push({
+      id: `con-${Date.now()}`, name: formData.name.trim(), email: formData.email.trim().toLowerCase(),
+      subject: formData.subject.trim(), message: formData.message.trim(), createdAt: new Date().toISOString()
     });
+    saveCMSState(state);
+    setSubmitted(true);
+    setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
+  const inputCls = "w-full rounded-xl border px-4 py-3 text-sm focus:outline-none transition-colors";
+  const inputStyle = { backgroundColor: C.bg, borderColor: C.border, color: C.ink, caretColor: C.emerald };
+  const labelCls = "mb-1.5 block text-xs font-semibold uppercase tracking-wider";
+
   return (
-    <div id="contacto-view" className="bg-brand-bg min-h-screen pt-16">
-      
+    <div style={{ backgroundColor: C.bg, color: C.ink, fontFamily: "'Inter', system-ui, sans-serif", minHeight: '100vh', paddingTop: '96px' }}>
+
       {/* Header */}
-      <section className="py-20 bg-brand-dark text-white text-center border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-brand-green uppercase bg-white/10 px-3 py-1.5 rounded-full">Contacto Directo</span>
-          <h1 className="text-3xl sm:text-4xl font-serif font-normal tracking-tight">Únete a la Conversación</h1>
-          <p className="text-brand-bg/80 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-sans font-light">
-            ¿Tienes dudas técnicas sobre el itinerario, la dificultad o te interesa proponer un patrocinio para colegios rurales? Escríbenos directamente.
+      <section className="border-b px-4 py-16 text-center sm:px-6" style={{ borderColor: C.border, backgroundColor: C.bg2 }}>
+        <div className="mx-auto max-w-3xl space-y-3">
+          <span className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold" style={{ borderColor: C.border, color: C.emerald }}>
+            <Compass className="h-3.5 w-3.5" /> Contacto
+          </span>
+          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Hablemos de tu próxima salida</h1>
+          <p className="mx-auto max-w-xl text-sm leading-relaxed" style={{ color: C.dim }}>
+            ¿Dudas sobre itinerarios, dificultad, cupos o quieres reservar una fecha? Escríbenos y te respondemos a la brevedad.
           </p>
         </div>
       </section>
 
-      {/* Main Grid: Info Cards + Form */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
-          {/* Info Side Column */}
-          <div className="lg:col-span-5 space-y-8">
+      {/* Grid */}
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12">
+          {/* Info */}
+          <div className="space-y-8 lg:col-span-5">
             <div className="space-y-3">
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-green">Oficinas del Movimiento</span>
-              <h2 className="text-2xl font-serif text-brand-dark">Enlace Continental</h2>
-              <p className="text-brand-dark/75 text-sm leading-relaxed font-sans font-light">
-                Operamos con base logística y administrativa descentralizada entre Europa (coordinación comercial, divulgación en España y Alemania) y Chile (directorio de científicos y logística de campo).
+              <h2 className="text-2xl font-bold">Operamos en Chile</h2>
+              <p className="text-sm leading-relaxed" style={{ color: C.dim }}>
+                Expediciones guiadas por ingenieros en expediciones, con base logística en el territorio. Atención 100% remota y coordinación local.
               </p>
             </div>
-
-            <div className="space-y-6 font-sans text-sm">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-brand-bg text-brand-dark/70 border border-brand-dark/5 flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5" />
+            <div className="space-y-6 text-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border" style={{ borderColor: C.border, backgroundColor: C.card }}>
+                  <MapPin className="h-5 w-5" color={C.emerald} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-brand-dark">Coordinación de Operaciones Chile</h4>
-                  <p className="text-brand-dark/60 mt-1">General Lagos, Valdivia, Región de Los Ríos, Chile.</p>
+                  <h4 className="font-semibold">Operaciones en Chile</h4>
+                  <p className="mt-1" style={{ color: C.dim }}>Valdivia, Región de Los Ríos.</p>
                 </div>
               </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-brand-bg text-brand-dark/70 border border-brand-dark/5 flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5" />
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border" style={{ borderColor: C.border, backgroundColor: C.card }}>
+                  <Envelope className="h-5 w-5" color={C.emerald} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-brand-dark">Escríbenos directamente</h4>
-                  <p className="text-brand-green font-semibold mt-1">rauliftravel@gmail.com</p>
+                  <h4 className="font-semibold">Escríbenos</h4>
+                  <p className="mt-1 font-semibold" style={{ color: C.emerald }}>rauliftravel@gmail.com</p>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-brand-dark/5 font-sans text-xs text-brand-dark/75 space-y-1">
-              <h5 className="font-serif text-sm text-brand-dark">¿Eres biólogo o científico chileno?</h5>
-              <p className="leading-relaxed font-light">
-                Siempre estamos expandiendo nuestra red de embajadores en terreno. Si tienes un proyecto de monitoreo, reforestación o tesis de campo que creas que puede ser apoyado por nuestro motor de sostenibilidad, por favor ponte en contacto detallando tu perfil académico.
-              </p>
             </div>
           </div>
 
-          {/* Form Column */}
-          <div className="lg:col-span-7 bg-white border border-brand-dark/5 rounded-3xl p-8 shadow-sm">
+          {/* Form */}
+          <div className="rounded-3xl border p-8 lg:col-span-7" style={{ borderColor: C.border, backgroundColor: C.bg2 }}>
             {submitted ? (
-              <div className="py-12 text-center space-y-4">
-                <div className="w-14 h-14 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto text-brand-green">
-                  <CheckCircle className="w-8 h-8" />
+              <div className="py-12 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full" style={{ backgroundColor: 'rgba(56,201,139,0.1)' }}>
+                  <CheckCircle className="h-8 w-8" color={C.emerald} />
                 </div>
-                <h3 className="text-xl font-serif text-brand-dark">¡Mensaje enviado con éxito!</h3>
-                <p className="text-brand-dark/75 text-xs sm:text-sm max-w-md mx-auto leading-relaxed font-sans font-light">
-                  Agradecemos tu contacto. Tu mensaje ha quedado registrado en la Consola Central Raulif de forma segura. Uno de nuestros naturalistas europeos se pondrá en contacto contigo en las próximas 24 horas.
+                <h3 className="mt-4 text-xl font-bold">¡Mensaje enviado!</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: C.dim }}>
+                  Gracias por contactarnos. Te responderemos pronto con la información de tu salida.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-serif text-brand-dark">Formulario de Contacto Directo</h3>
-                  <p className="text-xs text-brand-dark/50 mt-1">Por favor rellena todos los campos e inicia la conversación hoy.</p>
+                  <h3 className="text-lg font-bold">Formulario de contacto</h3>
+                  <p className="mt-1 text-xs" style={{ color: C.dim }}>Completa los campos y te responderemos a la brevedad.</p>
                 </div>
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl p-3">
-                    {error}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {error && <div className="rounded-xl border border-red-500/30 p-3 text-xs" style={{ color: '#fca5a5', backgroundColor: 'rgba(239,68,68,0.08)' }}>{error}</div>}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-mono font-bold text-brand-dark/60 uppercase mb-1.5">Nombre completo *</label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      placeholder="Ej. Juan de la Cruz"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full bg-brand-bg border border-brand-dark/10 rounded-xl px-4 py-3 text-sm text-brand-dark placeholder-brand-dark/40 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
-                    />
+                    <label className={labelCls} style={{ color: C.dim }}>Nombre completo *</label>
+                    <input type="text" name="name" required placeholder="Tu nombre" value={formData.name} onChange={handleInputChange} className={inputCls} style={inputStyle} />
                   </div>
                   <div>
-                    <label className="block text-xs font-mono font-bold text-brand-dark/60 uppercase mb-1.5">Correo electrónico *</label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      placeholder="Ej. juan@gmail.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full bg-brand-bg border border-brand-dark/10 rounded-xl px-4 py-3 text-sm text-brand-dark placeholder-brand-dark/40 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
-                    />
+                    <label className={labelCls} style={{ color: C.dim }}>Correo electrónico *</label>
+                    <input type="email" name="email" required placeholder="tucorreo@email.com" value={formData.email} onChange={handleInputChange} className={inputCls} style={inputStyle} />
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-xs font-mono font-bold text-brand-dark/60 uppercase mb-1.5">Asunto del Mensaje *</label>
-                  <input
-                    type="text"
-                    name="subject"
-                    required
-                    placeholder="Ej. Interés en cupo grupal / Propuesta científica"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    className="w-full bg-brand-bg border border-brand-dark/10 rounded-xl px-4 py-3 text-sm text-brand-dark placeholder-brand-dark/40 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
-                  />
+                  <label className={labelCls} style={{ color: C.dim }}>Asunto *</label>
+                  <input type="text" name="subject" required placeholder="Ej. Interés en cupo / Reserva de fecha" value={formData.subject} onChange={handleInputChange} className={inputCls} style={inputStyle} />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-mono font-bold text-brand-dark/60 uppercase mb-1.5">Tu Mensaje *</label>
-                  <textarea
-                    name="message"
-                    required
-                    rows={5}
-                    placeholder="Escribe aquí con libertad tus dudas, ideas o intenciones de viaje..."
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    className="w-full bg-brand-bg border border-brand-dark/10 rounded-xl px-4 py-3 text-sm text-brand-dark placeholder-brand-dark/40 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
-                  />
+                  <label className={labelCls} style={{ color: C.dim }}>Tu mensaje *</label>
+                  <textarea name="message" required rows={5} placeholder="Escribe aquí tus dudas, ideas o intenciones de viaje..." value={formData.message} onChange={handleInputChange} className={inputCls} style={inputStyle} />
                 </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-brand-dark hover:bg-brand-green text-white text-xs font-mono font-bold uppercase tracking-widest py-4 rounded-xl transition-colors shadow-md flex items-center justify-center space-x-2 cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>Enviar mensaje central</span>
+                <button type="submit" className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl py-4 text-xs font-bold uppercase tracking-widest text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
+                  <PaperPlaneTilt className="h-4 w-4" /> Enviar mensaje
                 </button>
-
-                <div className="flex items-center space-x-2 text-[10px] text-brand-dark/50 justify-center pt-2">
-                  <ShieldCheck className="w-4 h-4 text-brand-green shrink-0" />
-                  <span>Tu comunicación está cifrada de forma segura y solo accesible por RAULIF.</span>
+                <div className="flex items-center justify-center gap-2 pt-2 text-[10px]" style={{ color: 'rgba(139,160,147,0.7)' }}>
+                  <ShieldCheck className="h-4 w-4" color="rgba(56,201,139,0.5)" /> Tu mensaje queda registrado de forma segura.
                 </div>
               </form>
             )}
           </div>
-
         </div>
       </div>
 

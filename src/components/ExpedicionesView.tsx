@@ -1,161 +1,111 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { CalendarBlank, Users, ArrowRight, Compass, Clock, CurrencyCircleDollar } from '@phosphor-icons/react';
 
-import { Compass, Clock, Trophy, Users, ShieldAlert } from 'lucide-react';
-import { GlobalCMSState } from '../types';
-
-interface ExpedicionesViewProps {
-  db: GlobalCMSState;
-  onNavigate: (page: string) => void;
+interface RouteData {
+  id: string; slug: string; title: string; subtitle: string;
+  description: string; nicho: string; imagen: string; precio: number; moneda: string; duracion: string;
 }
+interface Departure { id: string; start_date: string; end_date: string; total_capacity: number; available: number; }
 
-export default function ExpedicionesView({ db, onNavigate }: ExpedicionesViewProps) {
-  const activeExpeditions = db.expediciones.filter(e => e.status === 'active');
-  const soonExpeditions = db.expediciones.filter(e => e.status === 'soon');
+const C = {
+  bg: '#0a0f0d', bg2: '#101713', card: '#141c18',
+  ink: '#eef5f1', dim: '#8ba093', emerald: '#38c98b', amber: '#e8a54a',
+  border: 'rgba(255,255,255,0.07)',
+};
 
-  const handleNavigateWithScroll = (page: string, hash: string) => {
-    window.location.hash = hash;
-    onNavigate(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+export default function ExpedicionesView({ onNavigate, db }: { onNavigate: (p: string) => void; db?: any }) {
+  const [routes, setRoutes] = useState<RouteData[]>([]);
+  const [departures, setDepartures] = useState<Record<string, Departure[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/raulif-mvp/catalog/routes')
+      .then(r => r.json())
+      .then(data => {
+        setRoutes(data);
+        data.forEach((r: RouteData) => {
+          fetch(`/api/raulif-mvp/catalog/routes/${r.slug}/departures`)
+            .then(r2 => r2.json())
+            .then(deps => setDepartures(prev => ({ ...prev, [r.slug]: deps })));
+        });
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <div id="expediciones-view" className="bg-brand-bg min-h-screen pt-16">
-      
-      {/* Header */}
-      <section className="py-20 bg-brand-dark text-white text-center border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-brand-green uppercase bg-white/10 px-3 py-1.5 rounded-full">Exploración Regenerativa</span>
-          <h1 className="text-3xl sm:text-4xl font-serif font-normal tracking-tight">Expediciones de Conservación</h1>
-          <p className="text-brand-bg/80 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-sans font-light">
-            Cada viaje es un proyecto científico in-situ. Elige una experiencia interactiva para involucrarte activamente en la protección del territorio silvestre de Chile.
+    <div style={{ backgroundColor: C.bg, color: C.ink, fontFamily: "'Inter', system-ui, sans-serif", minHeight: '100vh', paddingTop: '96px' }}>
+      <div className="mx-auto max-w-6xl px-6 pb-20 md:px-12">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-3xl font-black md:text-4xl">Expediciones</h1>
+          <p className="mt-3 max-w-2xl text-sm md:text-base" style={{ color: C.dim }}>
+            Salidas guiadas por ingenieros en expediciones. Cada una con fechas exactas y cupos limitados que se liberan según las reservas.
           </p>
         </div>
-      </section>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-20">
-        
-        {/* Active Trips Section */}
-        <div className="space-y-8">
-          <div>
-            <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-green block mb-1">Convocatorias Abiertas</span>
-            <h2 className="text-2xl font-serif text-brand-dark">Aventuras Activas</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {activeExpeditions.map((exp) => (
-              <div
-                key={exp.id}
-                onClick={() => handleNavigateWithScroll('bosque-valdiviano', '#/expediciones/bosque-valdiviano')}
-                className="bg-white border border-brand-dark/5 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img
-                    src={exp.featuredImage}
-                    alt={exp.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute top-4 left-4 bg-brand-green text-white font-mono text-[9px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10">
-                    Convocatoria Abierta • Cupos Limitados
-                  </div>
-                </div>
-
-                <div className="p-8 space-y-6">
-                  <div className="space-y-2">
-                    <span className="text-xs font-mono text-brand-green font-bold uppercase">{exp.duration}</span>
-                    <h3 className="text-2xl font-serif text-brand-dark group-hover:text-brand-green transition-colors">
-                      {exp.title}
-                    </h3>
-                    <p className="text-brand-dark/75 text-xs sm:text-sm leading-relaxed font-sans font-light">
-                      {exp.storySummary}
-                    </p>
-                  </div>
-
-                  <div className="pt-6 border-t border-brand-dark/5 grid grid-cols-3 gap-2 text-center text-xs font-mono">
-                    <div className="flex flex-col items-center">
-                      <Clock className="w-4 h-4 text-brand-dark/45 mb-1" />
-                      <span className="text-[10px] text-brand-dark/45">Duración</span>
-                      <span className="font-semibold text-brand-dark">{exp.duration.split('/')[0]}</span>
-                    </div>
-                    <div className="flex flex-col items-center border-x border-brand-dark/5">
-                      <Trophy className="w-4 h-4 text-brand-dark/45 mb-1" />
-                      <span className="text-[10px] text-brand-dark/45">Físico</span>
-                      <span className="font-semibold text-brand-dark">{exp.physicalLevel}</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <Users className="w-4 h-4 text-brand-dark/45 mb-1" />
-                      <span className="text-[10px] text-brand-dark/45">Precio</span>
-                      <span className="font-semibold text-brand-dark">{exp.price}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 text-center">
-                    <button className="w-full bg-brand-dark text-white text-xs font-mono font-bold uppercase tracking-widest py-3.5 rounded-xl hover:bg-brand-green transition-colors cursor-pointer">
-                      Ver Documental de la Experiencia
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Future Trips Section */}
-        {soonExpeditions.length > 0 && (
-          <div className="space-y-8 pt-12 border-t border-brand-dark/5">
-            <div>
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-green block mb-1">Próximos Destinos</span>
-              <h2 className="text-2xl font-serif text-brand-dark">Planificación 2027</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {soonExpeditions.map((exp) => (
-                <div
-                  key={exp.id}
-                  className="bg-white border border-brand-dark/5 rounded-3xl p-6 flex flex-col justify-between group"
+        {loading ? (
+          <p style={{ color: C.dim }}>Cargando expediciones...</p>
+        ) : routes.length === 0 ? (
+          <p style={{ color: C.dim }}>Pronto anunciaremos nuevas salidas.</p>
+        ) : (
+          <div className="space-y-8">
+            {routes.map((r, i) => {
+              const deps = departures[r.slug] || [];
+              return (
+                <motion.article
+                  key={r.slug}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: i * 0.06 }}
+                  className="overflow-hidden rounded-3xl border"
+                  style={{ borderColor: C.border, backgroundColor: C.card }}
                 >
-                  <div className="space-y-4">
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-brand-bg">
-                      <img
-                        src={exp.featuredImage}
-                        alt={exp.title}
-                        className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-opacity"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="absolute top-4 left-4 bg-brand-dark text-white font-mono text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest">
-                        Próximamente
+                  <div className="grid md:grid-cols-2">
+                    {/* Imagen */}
+                    <div className="relative h-60 overflow-hidden md:h-auto">
+                      <motion.img src={r.imagen} alt={r.title} className="h-full w-full object-cover" whileHover={{ scale: 1.08 }} transition={{ duration: 0.7 }} />
+                      <span className="absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-bold" style={{ backgroundColor: C.emerald, color: '#07120d' }}>{r.nicho}</span>
+                    </div>
+                    {/* Contenido */}
+                    <div className="flex flex-col justify-center p-6 md:p-8">
+                      <div className="flex items-center gap-2 text-xs" style={{ color: C.dim }}>
+                        <Clock className="h-4 w-4" color={C.emerald} /> {r.duracion || '7 días'}
                       </div>
-                    </div>
+                      <h2 className="mt-2 text-2xl font-bold">{r.title}</h2>
+                      <p className="mt-1 text-sm font-semibold" style={{ color: C.emerald }}>{r.subtitle}</p>
+                      <p className="mt-3 text-sm leading-relaxed" style={{ color: C.dim }}>{r.description}</p>
 
-                    <div className="space-y-1.5">
-                      <h3 className="text-lg font-serif text-brand-dark">{exp.title}</h3>
-                      <p className="text-xs text-brand-dark/65 leading-relaxed font-sans font-light">
-                        {exp.storySummary}
-                      </p>
+                      {/* Precio */}
+                      <div className="mt-4 flex items-center gap-2 text-sm">
+                        <CurrencyCircleDollar className="h-5 w-5" color={C.emerald} weight="duotone" />
+                        <span className="text-lg font-black">{r.precio?.toLocaleString('es-CL')} {r.moneda || 'CLP'}</span>
+                      </div>
+
+                      {/* Cupos por fecha */}
+                      <div className="mt-4 space-y-2">
+                        {deps.slice(0, 3).map((d) => (
+                          <div key={d.id} className="flex items-center justify-between rounded-xl border px-4 py-2.5" style={{ borderColor: C.border }}>
+                            <span className="flex items-center gap-2 text-sm"><CalendarBlank className="h-4 w-4" color={C.emerald} weight="duotone" />{d.start_date} → {d.end_date}</span>
+                            <span className="flex items-center gap-1.5 text-sm font-bold" style={{ color: d.available > 3 ? C.emerald : C.amber }}>
+                              <Users className="h-4 w-4" />{d.available} cupos
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button onClick={() => onNavigate('catalogo')} className="mt-5 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-[#07120d] transition-transform hover:-translate-y-0.5" style={{ backgroundColor: C.emerald }}>
+                        Reservar cupo <ArrowRight className="h-4 w-4" weight="bold" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="pt-6 border-t border-brand-dark/5 flex items-center justify-between text-xs font-mono text-brand-dark/45">
-                    <span>Apertura de Cupos 2027</span>
-                    <button
-                      onClick={() => handleNavigateWithScroll('contacto', '#/contacto')}
-                      className="text-brand-green hover:text-brand-green-dark font-semibold cursor-pointer"
-                    >
-                      Recibir Aviso →
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                </motion.article>
+              );
+            })}
           </div>
         )}
-
       </div>
-
     </div>
   );
 }

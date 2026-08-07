@@ -15,11 +15,13 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import httpx
 
 DB_PATH = Path(os.environ.get("RAULIF_MVP_DB", "/data/raulif_mvp.db"))
+PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")
 
 app = FastAPI(title="Raulif Travel MVP API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -393,3 +395,33 @@ def get_impact() -> Dict[str, Any]:
 @app.get("/api/raulif-mvp/health")
 def health() -> Dict[str, str]:
     return {"status": "ok", "service": "raulif-mvp"}
+
+
+@app.get("/api/raulif-mvp/images")
+async def pexels_images(q: str = Query(..., description="Término de búsqueda"),
+                        per_page: int = Query(6, ge=1, le=20)) -> Dict[str, Any]:
+    """Proxy a la API de Pexels para poblar la web con imágenes de deportes de aventura.
+    La API key queda en el servidor, no se expone al frontend."""
+    if not PEXELS_KEY:
+        raise HTTPException(500, "PEXELS_API_KEY no configurada")
+    async with httpx.AsyncClient(timeout=15) as client:
+        resp = await client.get(
+            "https://api.pexels.com/v1/search",
+            params={"query": q, "per_page": per_page, "orientation": "landscape"},
+            headers={"Authorization": PEXELS_KEY},
+        )
+    if resp.status_code != 200:
+        raise HTTPException(resp.status_code, "Error consultando Pexels")
+    data = resp.json()
+    photos = [
+        {
+            "id": p["id"],
+            "alt": p.get("alt") or q,
+            "url": p["src"]["large2x"],
+            "thumb": p["src"]["medium"],
+            "photographer": p.get("photographer"),
+        }
+        for p in data.get("photos", [])
+    ]
+    return {"query": q, "total": data.get("total_results", 0), "photos": photos}
+

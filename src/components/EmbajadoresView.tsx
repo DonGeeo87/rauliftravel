@@ -1,114 +1,82 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { Award, Globe, BookOpen, Heart } from 'lucide-react';
+import { Trophy, Globe, BookOpenText, Microscope, Camera } from '@phosphor-icons/react';
 import { GlobalCMSState } from '../types';
 
 interface EmbajadoresViewProps {
   db: GlobalCMSState;
 }
 
+const C = {
+  bg: '#0a0f0d', bg2: '#101713', card: '#141c18',
+  ink: '#eef5f1', dim: '#8ba093', emerald: '#38c98b',
+  border: 'rgba(255,255,255,0.07)',
+};
+
 export default function EmbajadoresView({ db }: EmbajadoresViewProps) {
   return (
-    <div id="embajadores-view" className="bg-brand-bg min-h-screen pt-16">
-      
+    <div style={{ backgroundColor: C.bg, color: C.ink, fontFamily: "'Inter', system-ui, sans-serif", minHeight: '100vh', paddingTop: '96px' }}>
+
       {/* Header */}
-      <section className="py-20 bg-brand-dark text-white text-center border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-brand-green uppercase bg-white/10 px-3 py-1.5 rounded-full">Equipo Científico</span>
-          <h1 className="text-3xl sm:text-4xl font-serif font-normal tracking-tight">Nuestros Embajadores</h1>
-          <p className="text-brand-bg/80 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed font-sans font-light">
-            No te acompañan operadores turísticos, te acompañan biólogos, investigadores y fotógrafos dedicados activamente a defender la salud del territorio.
+      <section className="border-b px-4 py-16 text-center sm:px-6" style={{ borderColor: C.border, backgroundColor: C.bg2 }}>
+        <div className="mx-auto max-w-3xl space-y-3">
+          <span className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold" style={{ borderColor: C.border, color: C.emerald }}>
+            <Microscope className="h-3.5 w-3.5" /> Equipo científico
+          </span>
+          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Nuestros guías</h1>
+          <p className="mx-auto max-w-xl text-sm leading-relaxed" style={{ color: C.dim }}>
+            No te acompañan operadores turísticos, te acompañan biólogos, investigadores y fotógrafos dedicados a defender la salud del territorio.
           </p>
         </div>
       </section>
 
-      {/* Main Grid of Profiles */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-20">
-        
-        {db.embajadores.map((amb, idx) => (
-          <div
-            key={amb.id}
-            className={`bg-white border border-brand-dark/5 rounded-3xl p-8 lg:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-12 items-center`}
-          >
-            {/* Guide Photo Column */}
-            <div className="lg:col-span-4 flex flex-col items-center text-center space-y-4">
-              <img
-                src={amb.photo}
-                alt={amb.name}
-                className="w-48 h-48 sm:w-56 sm:h-56 object-cover rounded-full border-4 border-brand-bg shadow-sm"
-                referrerPolicy="no-referrer"
-              />
+      {/* Perfiles */}
+      <div className="mx-auto max-w-7xl space-y-16 px-4 py-20 sm:px-6 lg:px-8">
+        {db.embajadores.map((amb) => (
+          <div key={amb.id} className="grid grid-cols-1 items-center gap-12 rounded-3xl border p-8 lg:grid-cols-12 lg:p-12" style={{ borderColor: C.border, backgroundColor: C.bg2 }}>
+            {/* Foto */}
+            <div className="flex flex-col items-center space-y-4 text-center lg:col-span-4">
+              <img src={amb.photo} alt={amb.name} className="h-48 w-48 rounded-full border-4 object-cover sm:h-56 sm:w-56" style={{ borderColor: 'rgba(56,201,139,0.3)' }} referrerPolicy="no-referrer" />
               <div>
-                <h3 className="text-xl font-serif text-brand-dark">{amb.name}</h3>
-                <span className="block text-xs font-mono text-brand-green font-bold uppercase mt-1">{amb.role}</span>
+                <h3 className="text-xl font-bold">{amb.name}</h3>
+                <span className="mt-1 block text-xs font-bold uppercase tracking-wider" style={{ color: C.emerald }}>{amb.role}</span>
               </div>
             </div>
 
-            {/* Guide Profile Specs Column */}
-            <div className="lg:col-span-8 space-y-6">
-              
-              {/* Quote Block */}
+            {/* Perfil */}
+            <div className="space-y-6 lg:col-span-8">
               {amb.quote && (
-                <p className="text-lg sm:text-xl font-serif text-brand-dark italic leading-relaxed border-l-4 border-brand-green pl-4 py-1">
-                  "{amb.quote}"
-                </p>
+                <p className="border-l-4 py-1 pl-4 text-lg italic leading-relaxed" style={{ borderColor: C.emerald, color: '#c4d4cb' }}>"{amb.quote}"</p>
               )}
+              <p className="text-sm leading-relaxed" style={{ color: C.dim }}>{amb.bio}</p>
 
-              {/* Bio */}
-              <p className="text-brand-dark/75 text-xs sm:text-sm leading-relaxed font-sans font-light">
-                {amb.bio}
-              </p>
-
-              {/* Spec tags bento */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-brand-dark/5 font-sans">
-                
-                {/* Specialty */}
+              <div className="grid grid-cols-1 gap-4 border-t pt-4 sm:grid-cols-2" style={{ borderColor: C.border }}>
                 <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono text-brand-dark/45 font-bold uppercase flex items-center space-x-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-brand-green" />
-                    <span>Especialidad</span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(139,160,147,0.6)' }}>
+                    <BookOpenText className="h-3.5 w-3.5" color={C.emerald} /> Especialidad
                   </span>
-                  <span className="block text-xs text-brand-dark font-semibold">{amb.specialty}</span>
+                  <span className="block text-xs font-semibold">{amb.specialty}</span>
                 </div>
-
-                {/* Languages */}
                 <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono text-brand-dark/45 font-bold uppercase flex items-center space-x-1.5">
-                    <Globe className="w-3.5 h-3.5 text-brand-green" />
-                    <span>Idiomas de campo</span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(139,160,147,0.6)' }}>
+                    <Globe className="h-3.5 w-3.5" color={C.emerald} /> Idiomas
                   </span>
-                  <span className="block text-xs text-brand-dark font-semibold">{amb.languages.join(', ')}</span>
+                  <span className="block text-xs font-semibold">{amb.languages.join(', ')}</span>
                 </div>
-
-                {/* Certifications */}
                 {amb.certifications && amb.certifications.length > 0 && (
-                  <div className="sm:col-span-2 space-y-1.5">
-                    <span className="text-[10px] font-mono text-brand-dark/45 font-bold uppercase flex items-center space-x-1.5">
-                      <Award className="w-3.5 h-3.5 text-brand-green" />
-                      <span>Certificaciones y Títulos</span>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(139,160,147,0.6)' }}>
+                      <Trophy className="h-3.5 w-3.5" color={C.emerald} /> Títulos y certificaciones
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {amb.certifications.map((cert, cIdx) => (
-                        <span
-                          key={cIdx}
-                          className="px-2.5 py-1 bg-brand-bg text-brand-dark/70 border border-brand-dark/5 rounded-md text-[10px] font-semibold"
-                        >
-                          {cert}
-                        </span>
+                        <span key={cIdx} className="rounded-md border px-2.5 py-1 text-[10px] font-semibold" style={{ borderColor: C.border, color: C.dim }}>{cert}</span>
                       ))}
                     </div>
                   </div>
                 )}
-
               </div>
             </div>
-
           </div>
         ))}
-
       </div>
 
     </div>
